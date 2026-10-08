@@ -15,10 +15,6 @@
 
 <br/>
 
-<img src="assets/banner.svg" alt="EpochGo Platform Architecture Banner" width="920"/>
-
-<br/><br/>
-
 <img src="assets/demo.gif" alt="EpochGo Live Demo" width="920"/>
 
 </div>
