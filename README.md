@@ -3,7 +3,7 @@
 # ⚡ EpochGo
 
 **Autonomous, Local-First Multi-Agent AutoML Platform**  
-*by Epochlypse Research &bull; Powered by CrewAI, Ollama, and Scikit-Learn / XGBoost / LightGBM / CatBoost*
+*by [Epochlypse Research](https://epochlypse.com/) &bull; Powered by CrewAI, Ollama, and Scikit-Learn / XGBoost / LightGBM / CatBoost*
 
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![CrewAI](https://img.shields.io/badge/CrewAI-Multi--Agent-FF4B4B)](https://crewai.com)
@@ -16,6 +16,10 @@
 <br/>
 
 <img src="assets/banner.svg" alt="EpochGo Platform Architecture Banner" width="920"/>
+
+<br/><br/>
+
+<img src="assets/demo.gif" alt="EpochGo Live Demo" width="920"/>
 
 </div>
 
@@ -50,10 +54,12 @@
 ## 🚀 Quick Start (Single Command)
 
 ### Prerequisites
+
 - Docker & Docker Compose installed.
 - 16 GB RAM recommended (Apple Silicon M1/M2/M3/M4/M5 Mac, or Windows/Linux with 16GB RAM).
 
 ### 1. Clone & Run
+
 ```bash
 git clone https://github.com/AryanDinakaran/EpochGo.git
 cd EpochGo
@@ -61,7 +67,9 @@ docker compose up --build
 ```
 
 ### 2. Open Your Browser
+
 Navigate to:
+
 ```
 http://localhost:8000
 ```
@@ -72,18 +80,19 @@ That's it! EpochGo will automatically connect to Ollama, ensure the coding model
 
 ## 💻 Recommended Local Model & Hardware Benchmarks
 
-| Metric | Target Specification |
-| :--- | :--- |
-| **Recommended Model** | **`qwen2.5-coder:7b`** |
-| **Why This Model?** | World-class code synthesis, scikit-learn mastery, and precise Markdown report writing. |
-| **VRAM / RAM Footprint** | ~4.7 GB RAM |
-| **Target Hardware** | 16 GB RAM Mac (Apple Silicon M-Series) or PC |
-| **Available Headroom** | Leaves >10 GB RAM free for parallel XGBoost / CatBoost / LightGBM model training |
-| **Low-Resource Fallback** | `qwen2.5-coder:1.5b` or `qwen2.5-coder:3b` for 8GB environments |
+| Metric                    | Target Specification                                                                   |
+| :------------------------ | :------------------------------------------------------------------------------------- |
+| **Recommended Model**     | **`qwen2.5-coder:7b`**                                                                 |
+| **Why This Model?**       | World-class code synthesis, scikit-learn mastery, and precise Markdown report writing. |
+| **VRAM / RAM Footprint**  | ~4.7 GB RAM                                                                            |
+| **Target Hardware**       | 16 GB RAM Mac (Apple Silicon M-Series) or PC                                           |
+| **Available Headroom**    | Leaves >10 GB RAM free for parallel XGBoost / CatBoost / LightGBM model training       |
+| **Low-Resource Fallback** | `qwen2.5-coder:1.5b` or `qwen2.5-coder:3b` for 8GB environments                        |
 
 > [!TIP]
 > **Already have Ollama installed on your Mac?**
 > You can save disk space and run native Metal GPU acceleration by pointing EpochGo to your existing Ollama instance:
+>
 > ```bash
 > OLLAMA_BASE_URL=http://host.docker.internal:11434 docker compose up
 > ```
@@ -95,7 +104,7 @@ That's it! EpochGo will automatically connect to Ollama, ensure the coding model
 ```mermaid
 flowchart TD
     A["Raw CSV Upload & Project Name"] --> B["Agent 1: Data Preprocessor"]
-    
+
     subgraph Agent1 ["🧹 Agent 1: Data Preprocessing"]
         B --> B1["Data Profiling & Pattern Analysis"]
         B1 --> B2["Imputation, Outlier Clipping, Encoding & Scaling"]
@@ -128,18 +137,18 @@ flowchart TD
 
 Every project you create stores complete, reproducible artifacts inside `projects/<project_id>/`:
 
-| File | Purpose |
-| :--- | :--- |
-| `raw_data.csv` | Original uploaded dataset |
-| `cleaned_data.csv` | Transformed dataset after missing values, outliers, scaling & encoding |
-| `preprocessor.joblib` | Scikit-Learn transformer pipeline for downstream inference |
-| `preprocessing.py` | Standalone, reproducible Python script for data preparation |
-| `preprocessing.md` | Comprehensive Markdown report profiling before-and-after distributions |
-| `model.joblib` | Trained champion machine learning model artifact |
-| `model_building.py` | Standalone, reproducible model training and evaluation script |
-| `model_building.md` | Benchmark leaderboard (7 models), tuning stats, and feature importances |
-| `serve.py` | Production FastAPI microservice ready to deploy anywhere |
-| `metadata.json` | Project status, metric scoreboard, and feature schema |
+| File                  | Purpose                                                                 |
+| :-------------------- | :---------------------------------------------------------------------- |
+| `raw_data.csv`        | Original uploaded dataset                                               |
+| `cleaned_data.csv`    | Transformed dataset after missing values, outliers, scaling & encoding  |
+| `preprocessor.joblib` | Scikit-Learn transformer pipeline for downstream inference              |
+| `preprocessing.py`    | Standalone, reproducible Python script for data preparation             |
+| `preprocessing.md`    | Comprehensive Markdown report profiling before-and-after distributions  |
+| `model.joblib`        | Trained champion machine learning model artifact                        |
+| `model_building.py`   | Standalone, reproducible model training and evaluation script           |
+| `model_building.md`   | Benchmark leaderboard (7 models), tuning stats, and feature importances |
+| `serve.py`            | Production FastAPI microservice ready to deploy anywhere                |
+| `metadata.json`       | Project status, metric scoreboard, and feature schema                   |
 
 ---
 
@@ -199,16 +208,18 @@ uvicorn epoch_go.main:app --host 0.0.0.0 --port 8000 --reload
 
 ## 🏛️ Maintained & Developed By
 
-**Epochlypse Research**  
-- **Lead Architect & Research**: Aryan Dinakaran ([@aryandinakaran](https://github.com/aryandinakaran))  
-- **Affiliation**: IIT Madras &mdash; BS in Data Science & Applications  
+**[Epochlypse Research](https://epochlypse.com/)**  
+- **Lead Architect**: Aryan Dinakaran  
 - **Mission**: Local-first, private, reproducible multi-agent systems for high-leverage data science & machine learning engineering.  
-
-For collaboration, research partnerships, or fellowship inquiries, reach out via [GitHub](https://github.com/aryandinakaran) or open an issue.
+- **Connect & Collaborate**:
+  - 🌐 Website: [epochlypse.com](https://epochlypse.com/)
+  - ✉️ Email: [founder@epochlypse.com](mailto:founder@epochlypse.com)
+  - 💼 LinkedIn: [Aryan Dinakaran](https://www.linkedin.com/in/aryan-dinakaran-462277230/)
+  - 📸 Instagram: [@aryandinakaran](https://www.instagram.com/aryandinakaran/)
+  - 🐙 GitHub: [@AryanDinakaran](https://github.com/AryanDinakaran)
 
 ---
 
 ## 📄 License
 
 MIT License. Free for personal, commercial, and research use.
-
