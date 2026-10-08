@@ -12,6 +12,7 @@ services:
       - PYTHONUNBUFFERED=1
     volumes:
       - ./projects:/app/projects
+      - ./epoch_go:/app/epoch_go
     depends_on:
       - ollama
     restart: unless-stopped

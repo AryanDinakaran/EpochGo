@@ -13,6 +13,10 @@
 
 *Zero API keys. Zero cloud costs. 100% private and offline on your local machine.*
 
+<br/>
+
+<img src="assets/banner.svg" alt="EpochGo Platform Architecture Banner" width="920"/>
+
 </div>
 
 ---
@@ -51,9 +55,9 @@
 
 ### 1. Clone & Run
 ```bash
-git clone https://github.com/aryandinakaran/epoch-go.git
-cd epoch-go
-docker compose up
+git clone https://github.com/AryanDinakaran/EpochGo.git
+cd EpochGo
+docker compose up --build
 ```
 
 ### 2. Open Your Browser
@@ -160,8 +164,8 @@ If you prefer to run EpochGo directly on your host machine:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/aryandinakaran/epoch-go.git
-cd epoch-go
+git clone https://github.com/AryanDinakaran/EpochGo.git
+cd EpochGo
 
 # 2. Create virtual environment
 python3 -m venv venv
