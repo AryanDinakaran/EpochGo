@@ -39,6 +39,19 @@ ui/.env.local
 # macOS
 .DS_Store
 
-# IDEs
+# IDEs and AI agent tooling
+.agents/
 .idea/
 .vscode/
+*.swp
+*.swo
+
+# Testing and Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+tests/scratch_*
+
+# Logs
+*.log
+logs/

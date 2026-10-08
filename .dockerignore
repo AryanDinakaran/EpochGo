@@ -9,6 +9,9 @@ venv/
 .git
 .gitignore
 .DS_Store
+.agents/
+tests/scratch_*
+*.log
 ui/node_modules/
 projects/*
 !projects/.gitkeep
