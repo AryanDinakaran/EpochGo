@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EpochGo — Autonomous Multi-Agent Machine Learning</title>
+  <!-- Tailwind CSS with Dark Mode Class Strategy -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', '"Helvetica Neue"', 'sans-serif'],
+            mono: ['"SF Mono"', 'Menlo', 'Monaco', 'Courier New', 'monospace'],
+          },
+          colors: {
+            apple: {
+              blue: '#0071e3',
+              'blue-hover': '#0077ed',
+              darkbg: '#000000',
+              darkcard: '#161618',
+              darkcardhover: '#1c1c1e',
+              lightbg: '#f5f5f7',
+              lightcard: '#ffffff',
+              lightborder: '#e5e5ea',
+              darkborder: '#27272a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Marked for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Highlight.js for code syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light" disabled>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+  <style>
+    /* Apple smooth typography & scrollbars */
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    .dark ::-webkit-scrollbar-track { background: #000000; }
+    .dark ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 9999px; }
+    ::-webkit-scrollbar-track { background: #f5f5f7; }
+    ::-webkit-scrollbar-thumb { background: #d1d1d6; border-radius: 9999px; }
+    
+    /* Apple soft glass blur */
+    .apple-glass {
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    
+    /* Apple card shadow */
+    .apple-shadow {
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    }
+    .dark .apple-shadow {
+      box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.6);
+    }
+    .apple-card-hover {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .apple-card-hover:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Markdown Report Typography */
+    .prose-apple { line-height: 1.6; }
+    .prose-apple h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+    .prose-apple h2 { font-size: 1.25rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; letter-spacing: -0.01em; }
+    .prose-apple h3 { font-size: 1.1rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
+    .prose-apple p { margin-bottom: 0.75rem; font-size: 0.875rem; }
+    .prose-apple table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.825rem; border-radius: 8px; overflow: hidden; }
+    .prose-apple th { text-align: left; padding: 0.6rem 0.8rem; font-weight: 600; border-bottom: 1px solid rgba(120,120,128,0.2); }
+    .prose-apple td { padding: 0.6rem 0.8rem; border-bottom: 1px solid rgba(120,120,128,0.1); }
+    .prose-apple code { padding: 0.15rem 0.35rem; border-radius: 4px; font-size: 0.8em; font-family: "SF Mono", monospace; }
+  </style>
+</head>
+<body class="bg-apple-lightbg dark:bg-apple-darkbg text-neutral-900 dark:text-neutral-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- ================= STICKY TOP BAR ================= -->
+  <header class="sticky top-0 z-40 border-b border-apple-lightborder dark:border-apple-darkborder bg-white/70 dark:bg-black/70 apple-glass px-6 py-3 flex items-center justify-between shrink-0">
+    <!-- Left: Logo with EpochGo -->
+    <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-2 cursor-pointer" onclick="deselectProject()">
+        <span class="text-xl font-bold tracking-tight text-neutral-950 dark:text-white">Epoch<span class="text-apple-blue font-extrabold">Go</span></span>
+        <span class="text-[11px] font-semibold tracking-wide text-neutral-500 dark:text-neutral-400 px-2.5 py-0.5 rounded-full bg-neutral-200/60 dark:bg-neutral-800/80">Epochlypse Research</span>
+      </div>
+    </div>
+
+    <!-- Right: Theme Mode Toggle (Moon / Sun) -->
+    <div class="flex items-center space-x-3">
+      <!-- Live Ollama Status Indicator -->
+      <div id="ollama-pill" class="hidden sm:flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-medium text-neutral-600 dark:text-neutral-300 bg-neutral-200/50 dark:bg-neutral-800/60 border border-neutral-300/40 dark:border-neutral-700/50">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span id="model-name-badge" class="font-mono text-[11px]">qwen2.5-coder:7b</span>
+      </div>
+
+      <!-- Theme Button Toggle -->
+      <button 
+        id="theme-toggle-btn"
+        onclick="toggleTheme()" 
+        aria-label="Toggle theme" 
+        class="w-9 h-9 rounded-full flex items-center justify-center bg-neutral-200/60 hover:bg-neutral-200 dark:bg-neutral-800/80 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 transition"
+        title="Toggle Light / Dark mode"
+      >
+        <i id="theme-icon-sun" data-lucide="sun" class="w-4 h-4 hidden"></i>
+        <i id="theme-icon-moon" data-lucide="moon" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN WORKSPACE (2 PANES) ================= -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- ================= LEFT PANE: PROJECT CARDS ================= -->
+    <aside class="w-80 md:w-96 border-r border-apple-lightborder dark:border-apple-darkborder bg-neutral-100/40 dark:bg-neutral-950/40 flex flex-col shrink-0 overflow-hidden">
+      <!-- Left Pane Header -->
+      <div class="px-5 py-4 border-b border-apple-lightborder dark:border-apple-darkborder flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Projects</span>
+        <button onclick="fetchProjects()" class="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition p-1 rounded-lg" title="Refresh">
+          <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <!-- Project Cards List -->
+      <div id="projects-container" class="flex-1 overflow-y-auto p-4 space-y-3">
+        <div class="text-center py-12 text-xs text-neutral-400">Loading projects...</div>
+      </div>
+    </aside>
+
+    <!-- ================= RIGHT PANE: ACTIVE PROJECT OR NEW PROJECT TRIGGER ================= -->
+    <main class="flex-1 flex flex-col overflow-y-auto bg-apple-lightbg dark:bg-apple-darkbg relative">
+
+      <!-- EMPTY STATE: Prompt to Create Project -->
+      <div id="empty-state-view" class="flex-1 flex flex-col items-center justify-center p-8 text-center min-h-[500px]">
+        <div class="w-20 h-20 rounded-3xl bg-white dark:bg-neutral-900 apple-shadow border border-apple-lightborder dark:border-apple-darkborder flex items-center justify-center text-apple-blue mb-5">
+          <i data-lucide="layers" class="w-9 h-9"></i>
+        </div>
+        <h2 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white mb-2">Machine Learning, Simplified.</h2>
+        <p class="text-neutral-500 dark:text-neutral-400 text-sm max-w-md mb-8 leading-relaxed">
+          Select a project on the left, or create a new project to run your tabular CSV dataset through the 3 autonomous agents.
+        </p>
+        <button 
+          onclick="openNewProjectModal()" 
+          class="flex items-center space-x-2 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-neutral-950 font-medium text-sm px-6 py-3 rounded-full apple-shadow transition"
+        >
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>New Project</span>
+        </button>
+      </div>
+
+      <!-- ACTIVE PROJECT VIEW -->
+      <div id="active-project-view" class="hidden flex-1 p-6 md:p-8 max-w-5xl mx-auto w-full space-y-8">
+
+        <!-- Top Overview Card -->
+        <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-2xl p-6 apple-shadow border border-apple-lightborder dark:border-apple-darkborder flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center space-x-3 mb-2">
+              <h1 id="proj-title" class="text-2xl font-bold tracking-tight text-neutral-950 dark:text-white">Project Name</h1>
+              <span id="proj-status-badge" class="text-xs px-2.5 py-0.5 rounded-full font-medium">Ready</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+              <span class="flex items-center space-x-1">
+                <strong class="text-neutral-700 dark:text-neutral-300">Target:</strong> 
+                <span id="proj-target-badge">-</span>
+              </span>
+              <span>•</span>
+              <span class="flex items-center space-x-1">
+                <strong class="text-neutral-700 dark:text-neutral-300">Task:</strong> 
+                <span id="proj-type-badge">-</span>
+              </span>
+              <span>•</span>
+              <span class="flex items-center space-x-1">
+                <strong class="text-neutral-700 dark:text-neutral-300">Dataset:</strong> 
+                <span id="proj-rows-badge">-</span> rows, <span id="proj-cols-badge">-</span> cols
+              </span>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center space-x-2 shrink-0">
+            <button id="btn-rerun-agents" onclick="rerunPipeline()" class="flex items-center space-x-1.5 text-xs font-medium px-3.5 py-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 transition">
+              <i data-lucide="play" class="w-3.5 h-3.5 text-emerald-500"></i>
+              <span>Re-run Agents</span>
+            </button>
+            <button onclick="openNewProjectModal()" class="flex items-center space-x-1.5 text-xs font-medium px-3.5 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-neutral-950 transition">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>New Project</span>
+            </button>
+            <button onclick="deleteCurrentProject()" class="text-neutral-400 hover:text-rose-500 p-2 rounded-xl transition" title="Delete Project">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ================= IN-PROGRESS PROCESSING SCREEN ================= -->
+        <div id="active-project-in-progress" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center min-h-[460px]">
+          <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-3xl p-8 apple-shadow border border-apple-lightborder dark:border-apple-darkborder max-w-lg w-full flex flex-col items-center space-y-6">
+            <!-- Animated Rotating Apple Loader -->
+            <div class="relative w-20 h-20 flex items-center justify-center">
+              <div class="absolute inset-0 rounded-full bg-apple-blue/10 dark:bg-apple-blue/20 animate-ping"></div>
+              <div class="w-16 h-16 rounded-full bg-white dark:bg-neutral-900 border border-apple-lightborder dark:border-apple-darkborder apple-shadow flex items-center justify-center text-apple-blue z-10">
+                <i data-lucide="loader-2" class="w-8 h-8 animate-spin"></i>
+              </div>
+            </div>
+
+            <!-- Title & Status -->
+            <div class="space-y-1">
+              <h3 id="progress-phase-title" class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white">Synthesizing Machine Learning Pipeline</h3>
+              <p id="progress-phase-desc" class="text-xs text-neutral-500 dark:text-neutral-400">Our 3 autonomous agents are currently cleaning, benchmarking, and preparing your model.</p>
+            </div>
+
+            <!-- 3-Step Live Progress Checklist -->
+            <div class="w-full space-y-2.5 pt-2 text-left">
+              <!-- Step 1 -->
+              <div id="step-row-1" class="p-3 rounded-2xl border border-apple-lightborder dark:border-apple-darkborder bg-neutral-50/60 dark:bg-neutral-900/60 flex items-center space-x-3 transition">
+                <div id="step-badge-1" class="w-6 h-6 rounded-full bg-apple-blue text-white flex items-center justify-center text-xs font-semibold shrink-0">
+                  <i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i>
+                </div>
+                <div class="truncate">
+                  <div class="text-xs font-semibold text-neutral-900 dark:text-white">1. Data Hygiene & Preprocessing</div>
+                  <div class="text-[11px] text-neutral-500 dark:text-neutral-400">Resolving missing values, IQR outlier treatment, scaling & encoding</div>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div id="step-row-2" class="p-3 rounded-2xl border border-apple-lightborder dark:border-apple-darkborder bg-neutral-50/60 dark:bg-neutral-900/60 flex items-center space-x-3 transition opacity-50">
+                <div id="step-badge-2" class="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-500 flex items-center justify-center text-xs font-semibold shrink-0">
+                  2
+                </div>
+                <div class="truncate">
+                  <div class="text-xs font-semibold text-neutral-900 dark:text-white">2. Model Benchmarks & Tuning</div>
+                  <div class="text-[11px] text-neutral-500 dark:text-neutral-400">Evaluating 7 baseline algorithms & tuning champion parameters</div>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div id="step-row-3" class="p-3 rounded-2xl border border-apple-lightborder dark:border-apple-darkborder bg-neutral-50/60 dark:bg-neutral-900/60 flex items-center space-x-3 transition opacity-50">
+                <div id="step-badge-3" class="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-500 flex items-center justify-center text-xs font-semibold shrink-0">
+                  3
+                </div>
+                <div class="truncate">
+                  <div class="text-xs font-semibold text-neutral-900 dark:text-white">3. API Deployment & Serving</div>
+                  <div class="text-[11px] text-neutral-500 dark:text-neutral-400">Synthesizing standalone serve.py & interactive testing playground</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Agent Thought Ticker -->
+            <div class="w-full p-3 bg-neutral-100/80 dark:bg-neutral-900/80 rounded-xl border border-apple-lightborder dark:border-apple-darkborder flex items-center space-x-2 text-left">
+              <span class="w-2 h-2 rounded-full bg-apple-blue animate-pulse shrink-0"></span>
+              <span id="progress-live-log" class="text-[11px] text-neutral-600 dark:text-neutral-300 font-mono truncate">Initializing autonomous agent crew...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= FAILED ERROR SCREEN ================= -->
+        <div id="active-project-failed" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center min-h-[400px]">
+          <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-3xl p-8 apple-shadow border border-rose-500/20 max-w-md w-full flex flex-col items-center space-y-4">
+            <div class="w-14 h-14 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center mb-1">
+              <i data-lucide="alert-triangle" class="w-7 h-7"></i>
+            </div>
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-white">Pipeline Execution Halted</h3>
+            <p id="failed-error-msg" class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">An error occurred while running the agent crew.</p>
+            <button onclick="rerunPipeline()" class="mt-2 text-xs font-semibold px-5 py-2.5 rounded-full bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-neutral-950 transition">
+              Retry Pipeline
+            </button>
+          </div>
+        </div>
+
+        <!-- ================= READY VIEW: 3 CLEAN BANNERS (SHOWN ONLY WHEN COMPLETED) ================= -->
+        <div id="active-project-ready" class="hidden space-y-8">
+        <!-- ================= BANNER 1: PROCESSING ================= -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between px-1">
+            <h2 class="text-lg font-bold tracking-tight text-neutral-950 dark:text-white flex items-center space-x-2">
+              <span>Processing</span>
+            </h2>
+            <span class="text-xs text-neutral-400 font-medium">Agent 1: Data Preprocessor</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <!-- preprocessing.py Card -->
+            <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-2xl p-4 apple-shadow border border-apple-lightborder dark:border-apple-darkborder flex items-center justify-between">
+              <div class="flex items-center space-x-3 truncate mr-2">
+                <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-apple-blue flex items-center justify-center shrink-0">
+                  <i data-lucide="file-code-2" class="w-4 h-4"></i>
+                </div>
+                <div class="truncate">
+                  <div class="text-sm font-semibold text-neutral-900 dark:text-white truncate">preprocessing.py</div>
+                  <div class="text-[11px] text-neutral-400">Scikit-Learn Pipeline Script</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-1 shrink-0">
+                <button onclick="previewFile('preprocessing.py')" class="text-xs text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 px-2.5 py-1.5 rounded-lg transition">Preview</button>
+                <a id="btn-dl-prep-py" href="#" class="p-1.5 text-neutral-400 hover:text-apple-blue transition" title="Download script">
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- preprocessing.md Card -->
+            <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-2xl p-4 apple-shadow border border-apple-lightborder dark:border-apple-darkborder flex items-center justify-between">
+              <div class="flex items-center space-x-3 truncate mr-2">
+                <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                  <i data-lucide="file-text" class="w-4 h-4"></i>
+                </div>
+                <div class="truncate">
+                  <div class="text-sm font-semibold text-neutral-900 dark:text-white truncate">preprocessing.md</div>
+                  <div class="text-[11px] text-neutral-400">Data Profiling & Hygiene Report</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-1 shrink-0">
+                <button onclick="previewFile('preprocessing.md')" class="text-xs text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 px-2.5 py-1.5 rounded-lg transition">Preview</button>
+                <a id="btn-dl-prep-md" href="#" class="p-1.5 text-neutral-400 hover:text-emerald-500 transition" title="Download report">
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= BANNER 2: MODEL BUILDING ================= -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between px-1">
+            <h2 class="text-lg font-bold tracking-tight text-neutral-950 dark:text-white flex items-center space-x-2">
+              <span>Model Building</span>
+            </h2>
+            <div id="champion-badge" class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+              7 Benchmark Models
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <!-- model_building.py Card -->
+            <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-2xl p-4 apple-shadow border border-apple-lightborder dark:border-apple-darkborder flex items-center justify-between">
+              <div class="flex items-center space-x-3 truncate mr-2">
+                <div class="w-9 h-9 rounded-xl bg-violet-500/10 text-violet-500 flex items-center justify-center shrink-0">
+                  <i data-lucide="cpu" class="w-4 h-4"></i>
+                </div>
+                <div class="truncate">
+                  <div class="text-sm font-semibold text-neutral-900 dark:text-white truncate">model_building.py</div>
+                  <div class="text-[11px] text-neutral-400">Training Script</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-1 shrink-0">
+                <button onclick="previewFile('model_building.py')" class="text-xs text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 px-2.5 py-1.5 rounded-lg transition">Preview</button>
+                <a id="btn-dl-model-py" href="#" class="p-1.5 text-neutral-400 hover:text-violet-500 transition" title="Download script">
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- model_building.md Card -->
+            <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-2xl p-4 apple-shadow border border-apple-lightborder dark:border-apple-darkborder flex items-center justify-between">
+              <div class="flex items-center space-x-3 truncate mr-2">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                  <i data-lucide="trophy" class="w-4 h-4"></i>
+                </div>
+                <div class="truncate">
+                  <div class="text-sm font-semibold text-neutral-900 dark:text-white truncate">model_building.md</div>
+                  <div class="text-[11px] text-neutral-400">Leaderboard & Stats</div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-1 shrink-0">
+                <button onclick="previewFile('model_building.md')" class="text-xs text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 px-2.5 py-1.5 rounded-lg transition">Preview</button>
+                <a id="btn-dl-model-md" href="#" class="p-1.5 text-neutral-400 hover:text-amber-500 transition" title="Download report">
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- model.joblib Card -->
+            <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-2xl p-4 apple-shadow border border-apple-lightborder dark:border-apple-darkborder flex items-center justify-between">
+              <div class="flex items-center space-x-3 truncate mr-2">
+                <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0">
+                  <i data-lucide="box" class="w-4 h-4"></i>
+                </div>
+                <div class="truncate">
+                  <div class="text-sm font-semibold text-neutral-900 dark:text-white truncate">model.joblib</div>
+                  <div class="text-[11px] text-neutral-400">Trained Binary</div>
+                </div>
+              </div>
+              <a id="btn-dl-model-joblib" href="#" class="text-xs font-medium bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Get</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= BANNER 3: SERVER & TESTING API ================= -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between px-1">
+            <h2 class="text-lg font-bold tracking-tight text-neutral-950 dark:text-white flex items-center space-x-2">
+              <span>Server</span>
+            </h2>
+            <span class="text-xs text-neutral-400 font-medium">FastAPI Serving & Testing Playground</span>
+          </div>
+
+          <!-- serve.py Card -->
+          <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-2xl p-4 apple-shadow border border-apple-lightborder dark:border-apple-darkborder flex items-center justify-between">
+            <div class="flex items-center space-x-3 truncate mr-2">
+              <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0">
+                <i data-lucide="server" class="w-4 h-4"></i>
+              </div>
+              <div class="truncate">
+                <div class="text-sm font-semibold text-neutral-900 dark:text-white truncate">serve.py</div>
+                <div class="text-[11px] text-neutral-400">Standalone Production FastAPI Service</div>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 shrink-0">
+              <button onclick="previewFile('serve.py')" class="text-xs text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 px-2.5 py-1.5 rounded-lg transition">Preview</button>
+              <a id="btn-dl-serve-py" href="#" class="p-1.5 text-neutral-400 hover:text-purple-500 transition" title="Download serve.py">
+                <i data-lucide="download" class="w-4 h-4"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Interactive Testing API Interface -->
+          <div class="bg-apple-lightcard dark:bg-apple-darkcard rounded-2xl p-6 apple-shadow border border-apple-lightborder dark:border-apple-darkborder space-y-6">
+            <div class="flex items-center justify-between border-b border-apple-lightborder dark:border-apple-darkborder pb-4">
+              <div>
+                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">Interactive Testing Interface</h3>
+                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Test live inference against the trained champion model.</p>
+              </div>
+              <button onclick="executePrediction()" class="bg-apple-blue hover:bg-apple-blue-hover text-white text-xs font-semibold px-4 py-2 rounded-xl apple-shadow transition flex items-center space-x-1.5">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                <span>Run Prediction</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Feature Input Form -->
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">Input Features</label>
+                <div id="testing-inputs-grid" class="space-y-2.5 max-h-72 overflow-y-auto pr-2">
+                  <p class="text-xs text-neutral-400">Loading input schema...</p>
+                </div>
+              </div>
+
+              <!-- Output Box & Curl Snippet -->
+              <div class="flex flex-col justify-between space-y-4">
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-3">Model Output</label>
+                  <div id="prediction-result-box" class="bg-neutral-100/70 dark:bg-neutral-900/70 rounded-xl p-5 text-center flex flex-col items-center justify-center min-h-[120px] border border-apple-lightborder dark:border-apple-darkborder">
+                    <span class="text-xs text-neutral-400">Click "Run Prediction" to test values</span>
+                  </div>
+                </div>
+
+                <!-- API Curl -->
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">cURL Example</span>
+                    <button onclick="copyCurlSnippet()" class="text-[11px] text-apple-blue hover:underline">Copy</button>
+                  </div>
+                  <pre class="bg-neutral-100/70 dark:bg-neutral-900/70 border border-apple-lightborder dark:border-apple-darkborder rounded-xl p-3 text-[11px] font-mono overflow-x-auto text-neutral-700 dark:text-neutral-300" id="curl-snippet"># Curl command</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div> <!-- End active-project-ready -->
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ================= "+ NEW PROJECT" FROSTED BLUR MODAL ================= -->
+  <div 
+    id="new-project-modal" 
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 dark:bg-black/60 apple-glass hidden"
+    onclick="handleModalBackdropClick(event)"
+  >
+    <div 
+      id="modal-card" 
+      class="bg-white dark:bg-apple-darkcard border border-apple-lightborder dark:border-apple-darkborder rounded-3xl w-full max-w-lg p-7 apple-shadow space-y-5 transition-all duration-200"
+    >
+      <div class="flex items-center justify-between border-b border-apple-lightborder dark:border-apple-darkborder pb-4">
+        <div>
+          <h3 class="text-lg font-bold tracking-tight text-neutral-900 dark:text-white">New Project</h3>
+          <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">Upload a CSV dataset to initiate the 3 agents.</p>
+        </div>
+        <button onclick="closeNewProjectModal()" class="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="create-project-form" onsubmit="handleCreateProject(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Project Name</label>
+          <input 
+            type="text" 
+            id="input-proj-name" 
+            required 
+            placeholder="e.g. Customer Churn Predictor" 
+            class="w-full bg-neutral-100/80 dark:bg-neutral-900 border border-apple-lightborder dark:border-apple-darkborder rounded-xl px-4 py-2.5 text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-apple-blue transition"
+          >
+        </div>
+
+        <!-- Drag & Drop Zone -->
+        <div>
+          <label class="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">CSV Dataset File</label>
+          <div 
+            id="dropzone" 
+            class="border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:border-apple-blue bg-neutral-50 dark:bg-neutral-900/40 rounded-2xl p-6 text-center cursor-pointer transition" 
+            onclick="document.getElementById('input-file').click()"
+          >
+            <input type="file" id="input-file" accept=".csv" required class="hidden" onchange="handleFileSelected(event)">
+            <i data-lucide="upload-cloud" class="w-8 h-8 text-apple-blue mx-auto mb-2"></i>
+            <p id="file-label" class="text-xs text-neutral-700 dark:text-neutral-300 font-medium">Click to upload or drag & drop CSV file</p>
+            <p class="text-[11px] text-neutral-400 mt-1">Raw tabular dataset in CSV format</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Target Column <span class="text-neutral-400 font-normal">(Optional)</span></label>
+            <input 
+              type="text" 
+              id="input-target-col" 
+              placeholder="Auto-inferred if empty" 
+              class="w-full bg-neutral-100/80 dark:bg-neutral-900 border border-apple-lightborder dark:border-apple-darkborder rounded-xl px-3.5 py-2 text-xs text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-apple-blue transition"
+            >
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1.5">Task Type</label>
+            <select 
+              id="input-task-type" 
+              class="w-full bg-neutral-100/80 dark:bg-neutral-900 border border-apple-lightborder dark:border-apple-darkborder rounded-xl px-3.5 py-2 text-xs text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-apple-blue transition"
+            >
+              <option value="">Auto-Detect</option>
+              <option value="classification">Classification</option>
+              <option value="regression">Regression</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center justify-between border-t border-apple-lightborder dark:border-apple-darkborder">
+          <div class="text-[10px] text-neutral-400 font-mono tracking-wider uppercase">Epochlypse Research &bull; Aryan Dinakaran</div>
+          <div class="flex items-center space-x-3">
+            <button type="button" onclick="closeNewProjectModal()" class="px-4 py-2 text-xs font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition">Cancel</button>
+            <button 
+              type="submit" 
+              id="btn-submit-project" 
+              class="bg-apple-blue hover:bg-apple-blue-hover text-white text-xs font-semibold px-5 py-2.5 rounded-full apple-shadow transition flex items-center space-x-1.5"
+            >
+              <span>Launch CrewAI</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= APPLE FILE PREVIEW DRAWER / MODAL ================= -->
+  <div 
+    id="preview-modal" 
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 dark:bg-black/70 apple-glass hidden"
+    onclick="handlePreviewBackdropClick(event)"
+  >
+    <div 
+      id="preview-card" 
+      class="bg-white dark:bg-apple-darkcard border border-apple-lightborder dark:border-apple-darkborder rounded-3xl w-full max-w-3xl max-h-[85vh] flex flex-col apple-shadow overflow-hidden"
+    >
+      <div class="px-6 py-4 border-b border-apple-lightborder dark:border-apple-darkborder flex items-center justify-between shrink-0">
+        <div class="flex items-center space-x-2.5">
+          <span id="preview-filename" class="text-sm font-bold text-neutral-900 dark:text-white font-mono">filename</span>
+        </div>
+        <button onclick="closePreviewModal()" class="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:text-neutral-900 dark:hover:text-white flex items-center justify-center transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-1 font-sans text-xs">
+        <div id="preview-markdown-content" class="prose-apple dark:text-neutral-200 hidden"></div>
+        <pre id="preview-code-content" class="bg-neutral-100 dark:bg-neutral-900 p-4 rounded-xl font-mono text-xs overflow-x-auto text-neutral-800 dark:text-neutral-200 hidden"><code class="language-python" id="preview-code-inner"></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    let currentProjectId = null;
+    let currentWsProjectId = null;
+    let wsPingInterval = null;
+    let livePollingInterval = null;
+    let projects = [];
+    let ws = null;
+    let featureSchema = [];
+
+    // Theme state
+    function initTheme() {
+      const saved = localStorage.getItem('epochgo_theme') || localStorage.getItem('slash_ai_theme');
+      if (saved === 'light') {
+        document.documentElement.classList.remove('dark');
+        document.getElementById('theme-icon-sun').classList.add('hidden');
+        document.getElementById('theme-icon-moon').classList.remove('hidden');
+        document.getElementById('hljs-dark').disabled = true;
+        document.getElementById('hljs-light').disabled = false;
+      } else {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-icon-sun').classList.remove('hidden');
+        document.getElementById('theme-icon-moon').classList.add('hidden');
+        document.getElementById('hljs-dark').disabled = false;
+        document.getElementById('hljs-light').disabled = true;
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('epochgo_theme', isDark ? 'dark' : 'light');
+      if (isDark) {
+        document.getElementById('theme-icon-sun').classList.remove('hidden');
+        document.getElementById('theme-icon-moon').classList.add('hidden');
+        document.getElementById('hljs-dark').disabled = false;
+        document.getElementById('hljs-light').disabled = true;
+      } else {
+        document.getElementById('theme-icon-sun').classList.add('hidden');
+        document.getElementById('theme-icon-moon').classList.remove('hidden');
+        document.getElementById('hljs-dark').disabled = true;
+        document.getElementById('hljs-light').disabled = false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      lucide.createIcons();
+      checkHealth();
+      fetchProjects();
+    });
+
+    async function checkHealth() {
+      try {
+        const res = await fetch('/api/health');
+        const data = await res.json();
+        if (data.active_model) {
+          document.getElementById('model-name-badge').textContent = data.active_model;
+        }
+      } catch (e) {
+        console.error('Health check error:', e);
+      }
+    }
+
+    async function fetchProjects() {
+      try {
+        const res = await fetch('/api/projects');
+        projects = await res.json();
+        renderProjectsList();
+        if (currentProjectId) {
+          const found = projects.find(p => p.id === currentProjectId);
+          if (found) loadProject(currentProjectId);
+        }
+      } catch (e) {
+        console.error('Fetch projects error:', e);
+      }
+    }
+
+    const projectCache = {};
+
+    function getStatusBadgeConfig(status) {
+      const config = {
+        created: { text: 'Queued', class: 'bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400' },
+        preprocessing: { text: '<i data-lucide="loader-2" class="w-2.5 h-2.5 animate-spin mr-1 inline"></i><span>Preprocessing</span>', class: 'bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center' },
+        model_building: { text: '<i data-lucide="loader-2" class="w-2.5 h-2.5 animate-spin mr-1 inline"></i><span>Evaluating</span>', class: 'bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 flex items-center' },
+        serving: { text: '<i data-lucide="loader-2" class="w-2.5 h-2.5 animate-spin mr-1 inline"></i><span>Deploying</span>', class: 'bg-purple-500/10 text-purple-500 border border-purple-500/20 flex items-center' },
+        completed: { text: 'Ready', class: 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' },
+        failed: { text: 'Failed', class: 'bg-rose-500/10 text-rose-500 border border-rose-500/20' },
+      };
+      return config[status] || { text: status, class: 'bg-neutral-200 dark:bg-neutral-800 text-neutral-400' };
+    }
+
+    function updateSidebarBadges(freshProjects) {
+      if (!freshProjects || !freshProjects.length) return;
+      freshProjects.forEach(p => {
+        const badgeEl = document.getElementById(`card-badge-${p.id}`);
+        if (badgeEl) {
+          const cfg = getStatusBadgeConfig(p.status);
+          const currentStatus = badgeEl.getAttribute('data-status');
+          if (currentStatus !== p.status) {
+            badgeEl.setAttribute('data-status', p.status);
+            badgeEl.className = `text-[10px] px-2.5 py-0.5 rounded-full font-semibold ${cfg.class}`;
+            badgeEl.innerHTML = cfg.text;
+            lucide.createIcons();
+          }
+        }
+      });
+    }
+
+    function renderProjectsList() {
+      const container = document.getElementById('projects-container');
+      if (!projects.length) {
+        container.innerHTML = `
+          <div class="text-center py-12 px-4 space-y-3">
+            <p class="text-xs text-neutral-400">No projects yet.</p>
+            <button onclick="openNewProjectModal()" class="text-xs text-apple-blue font-semibold hover:underline">Create first project</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = projects.map(p => {
+        const isSelected = p.id === currentProjectId;
+        const statusConfig = getStatusBadgeConfig(p.status);
+
+        const borderClass = isSelected
+          ? 'border-apple-blue shadow-md dark:border-apple-blue ring-2 ring-apple-blue/20 bg-white dark:bg-apple-darkcard'
+          : 'border-apple-lightborder dark:border-apple-darkborder bg-white dark:bg-apple-darkcard hover:border-neutral-400/50 dark:hover:border-neutral-700';
+
+        return `
+          <div 
+            id="card-item-${p.id}"
+            onclick="selectProject('${p.id}')" 
+            class="p-4 rounded-2xl cursor-pointer apple-card-hover apple-shadow border ${borderClass} transition"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-bold text-neutral-950 dark:text-white truncate max-w-[160px]">${p.name}</span>
+              <span id="card-badge-${p.id}" data-status="${p.status}" class="text-[10px] px-2.5 py-0.5 rounded-full font-semibold ${statusConfig.class}">${statusConfig.text}</span>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-neutral-500 dark:text-neutral-400">
+              <span>Target: <strong class="text-neutral-700 dark:text-neutral-200">${p.target_column || '-'}</strong></span>
+              <span>${p.rows || 0} rows</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function selectProject(id) {
+      currentProjectId = id;
+      renderProjectsList();
+      loadProject(id);
+    }
+
+    function deselectProject() {
+      currentProjectId = null;
+      stopLivePolling();
+      if (ws) {
+        try { ws.close(); } catch (e) {}
+        ws = null;
+      }
+      currentWsProjectId = null;
+      renderProjectsList();
+      document.getElementById('active-project-view').classList.add('hidden');
+      document.getElementById('empty-state-view').classList.remove('hidden');
+    }
+
+    async function loadProject(id, isSilentSync = false) {
+      try {
+        const res = await fetch(`/api/projects/${id}`);
+        if (!res.ok) return;
+        const p = await res.json();
+
+        const prevStatus = projectCache[id]?.status;
+        const statusChanged = prevStatus !== p.status;
+        projectCache[id] = p;
+
+        // If silent sync and status hasn't changed, only update live log without DOM thrashing
+        if (isSilentSync && !statusChanged) {
+          if (p.logs && p.logs.length > 0) {
+            const lastLog = p.logs[p.logs.length - 1];
+            const logEl = document.getElementById('progress-live-log');
+            if (logEl && logEl.textContent !== lastLog.message) {
+              logEl.textContent = lastLog.message;
+            }
+          }
+          return;
+        }
+
+        document.getElementById('empty-state-view').classList.add('hidden');
+        document.getElementById('active-project-view').classList.remove('hidden');
+
+        document.getElementById('proj-title').textContent = p.name;
+        document.getElementById('proj-target-badge').textContent = p.target_column || '-';
+        document.getElementById('proj-type-badge').textContent = (p.task_type || '-').toUpperCase();
+        document.getElementById('proj-rows-badge').textContent = p.rows || '-';
+        document.getElementById('proj-cols-badge').textContent = p.num_columns || '-';
+
+        // Re-run Agents button state guard
+        const btnRerun = document.getElementById('btn-rerun-agents');
+        const isBusy = ['created', 'preprocessing', 'model_building', 'serving'].includes(p.status);
+        if (btnRerun) {
+          if (isBusy) {
+            btnRerun.disabled = true;
+            btnRerun.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+            btnRerun.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>Agents Running...</span>';
+          } else {
+            btnRerun.disabled = false;
+            btnRerun.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+            btnRerun.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5 text-emerald-500"></i><span>Re-run Agents</span>';
+          }
+        }
+
+        if (isBusy) {
+          startLivePolling(id);
+        } else {
+          stopLivePolling();
+        }
+
+        // Status badge
+        const badge = document.getElementById('proj-status-badge');
+        const isReady = p.status === 'completed';
+        const isFailed = p.status === 'failed';
+        
+        const inProgressView = document.getElementById('active-project-in-progress');
+        const readyView = document.getElementById('active-project-ready');
+        const failedView = document.getElementById('active-project-failed');
+
+        if (isReady) {
+          badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
+          badge.textContent = 'READY';
+
+          inProgressView.classList.add('hidden');
+          failedView.classList.add('hidden');
+          readyView.classList.remove('hidden');
+
+          // Champion model banner
+          const champBadge = document.getElementById('champion-badge');
+          if (p.best_model) {
+            champBadge.textContent = `Champion: ${p.best_model}`;
+          } else {
+            champBadge.textContent = '7 Benchmark Models';
+          }
+
+          // Download links
+          document.getElementById('btn-dl-prep-py').href = `/api/projects/${id}/download/preprocessing.py`;
+          document.getElementById('btn-dl-prep-md').href = `/api/projects/${id}/download/preprocessing.md`;
+          document.getElementById('btn-dl-model-py').href = `/api/projects/${id}/download/model_building.py`;
+          document.getElementById('btn-dl-model-md').href = `/api/projects/${id}/download/model_building.md`;
+          document.getElementById('btn-dl-model-joblib').href = `/api/projects/${id}/download/model.joblib`;
+          document.getElementById('btn-dl-serve-py').href = `/api/projects/${id}/download/serve.py`;
+
+          loadTestingInterface(id);
+        } else if (isFailed) {
+          badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-rose-500/10 text-rose-500 border border-rose-500/20';
+          badge.textContent = 'FAILED';
+
+          readyView.classList.add('hidden');
+          inProgressView.classList.add('hidden');
+          failedView.classList.remove('hidden');
+          if (p.error) {
+            document.getElementById('failed-error-msg').textContent = p.error;
+          }
+        } else {
+          // In progress: 'created', 'preprocessing', 'model_building', 'serving'
+          const statusLabels = {
+            created: 'QUEUED',
+            preprocessing: 'PREPROCESSING',
+            model_building: 'EVALUATING',
+            serving: 'DEPLOYING'
+          };
+          badge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center space-x-1';
+          badge.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>${statusLabels[p.status] || p.status.toUpperCase()}</span>`;
+
+          readyView.classList.add('hidden');
+          failedView.classList.add('hidden');
+          inProgressView.classList.remove('hidden');
+
+          updateProgressStepper(p.status, p.logs);
+        }
+
+        // Connect WebSocket for live updates (persistent connection)
+        connectWebSocket(id);
+
+        lucide.createIcons();
+      } catch (e) {
+        console.error('Load project error:', e);
+      }
+    }
+
+    function updateProgressStepper(status, logs) {
+      const step1 = document.getElementById('step-row-1');
+      const badge1 = document.getElementById('step-badge-1');
+      const step2 = document.getElementById('step-row-2');
+      const badge2 = document.getElementById('step-badge-2');
+      const step3 = document.getElementById('step-row-3');
+      const badge3 = document.getElementById('step-badge-3');
+
+      const title = document.getElementById('progress-phase-title');
+      const desc = document.getElementById('progress-phase-desc');
+
+      const setDone = (row, badge, num) => {
+        row.classList.remove('opacity-50');
+        badge.className = 'w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-semibold shrink-0';
+        badge.innerHTML = '✓';
+      };
+      const setActive = (row, badge) => {
+        row.classList.remove('opacity-50');
+        badge.className = 'w-6 h-6 rounded-full bg-apple-blue text-white flex items-center justify-center text-xs font-semibold shrink-0';
+        badge.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i>';
+      };
+      const setPending = (row, badge, num) => {
+        row.classList.add('opacity-50');
+        badge.className = 'w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 text-neutral-500 flex items-center justify-center text-xs font-semibold shrink-0';
+        badge.innerHTML = num;
+      };
+
+      if (status === 'preprocessing') {
+        title.textContent = '1. Preprocessing Dataset';
+        desc.textContent = 'Agent 1 is profiling missing values, clipping outliers, and generating reproducible Scikit-Learn pipelines.';
+        setActive(step1, badge1);
+        setPending(step2, badge2, '2');
+        setPending(step3, badge3, '3');
+      } else if (status === 'model_building') {
+        title.textContent = '2. Evaluating Models & Tuning';
+        desc.textContent = 'Agent 2 is benchmarking 7 baseline algorithms (XGBoost, CatBoost, LightGBM) and tuning the top 3 with RandomizedSearchCV.';
+        setDone(step1, badge1, '1');
+        setActive(step2, badge2);
+        setPending(step3, badge3, '3');
+      } else if (status === 'serving') {
+        title.textContent = '3. Synthesizing FastAPI Service';
+        desc.textContent = 'Agent 3 is packaging the champion model into serve.py and spinning up the interactive prediction playground.';
+        setDone(step1, badge1, '1');
+        setDone(step2, badge2, '2');
+        setActive(step3, badge3);
+      } else {
+        title.textContent = 'Initializing Autonomous Crew';
+        desc.textContent = 'Preparing workspace environment and launching agents.';
+        setActive(step1, badge1);
+        setPending(step2, badge2, '2');
+        setPending(step3, badge3, '3');
+      }
+
+      if (logs && logs.length > 0) {
+        const lastLog = logs[logs.length - 1];
+        const logEl = document.getElementById('progress-live-log');
+        if (logEl) logEl.textContent = lastLog.message;
+      }
+      lucide.createIcons();
+    }
+
+    function connectWebSocket(id) {
+      if (ws && currentWsProjectId === id && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+        return;
+      }
+      if (ws) {
+        try { ws.close(); } catch (e) {}
+        ws = null;
+      }
+      if (wsPingInterval) {
+        clearInterval(wsPingInterval);
+        wsPingInterval = null;
+      }
+
+      currentWsProjectId = id;
+      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${proto}//${window.location.host}/ws/projects/${id}`);
+
+      ws.onopen = () => {
+        // Keep-alive ping every 20s
+        wsPingInterval = setInterval(() => {
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            try { ws.send('ping'); } catch (e) {}
+          }
+        }, 20000);
+      };
+
+      ws.onmessage = async (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.type === 'log') {
+            const logEl = document.getElementById('progress-live-log');
+            if (logEl) logEl.textContent = msg.message;
+          } else if (msg.type === 'status') {
+            const listRes = await fetch('/api/projects');
+            if (listRes.ok) {
+              const freshProjects = await listRes.json();
+              if (freshProjects.length !== projects.length) {
+                projects = freshProjects;
+                renderProjectsList();
+              } else {
+                projects = freshProjects;
+                updateSidebarBadges(freshProjects);
+              }
+            }
+            loadProject(id, false);
+          }
+        } catch (err) {
+          console.error('WS message parse error:', err);
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.warn('WS error on project', id, err);
+      };
+
+      ws.onclose = () => {
+        if (wsPingInterval) {
+          clearInterval(wsPingInterval);
+          wsPingInterval = null;
+        }
+      };
+    }
+
+    function startLivePolling(id) {
+      if (livePollingInterval) return;
+      livePollingInterval = setInterval(async () => {
+        if (!currentProjectId || currentProjectId !== id) {
+          stopLivePolling();
+          return;
+        }
+        try {
+          const res = await fetch(`/api/projects/${id}`);
+          if (res.ok) {
+            const p = await res.json();
+            const isBusy = ['created', 'preprocessing', 'model_building', 'serving'].includes(p.status);
+            if (!isBusy) {
+              stopLivePolling();
+            }
+            // Update projects list badges in-place without rebuilding DOM
+            const listRes = await fetch('/api/projects');
+            if (listRes.ok) {
+              const freshProjects = await listRes.json();
+              if (freshProjects.length !== projects.length) {
+                projects = freshProjects;
+                renderProjectsList();
+              } else {
+                projects = freshProjects;
+                updateSidebarBadges(freshProjects);
+              }
+            }
+            loadProject(id, true);
+          }
+        } catch (e) {
+          console.warn('Live poll error:', e);
+        }
+      }, 1500);
+    }
+
+    function stopLivePolling() {
+      if (livePollingInterval) {
+        clearInterval(livePollingInterval);
+        livePollingInterval = null;
+      }
+    }
+
+    async function loadTestingInterface(id) {
+      try {
+        const res = await fetch(`/api/projects/${id}/schema`);
+        if (!res.ok) return;
+        const info = await res.json();
+        featureSchema = info.feature_schema || [];
+
+        const grid = document.getElementById('testing-inputs-grid');
+        if (!featureSchema.length) {
+          grid.innerHTML = '<p class="text-xs text-neutral-400">Model is being trained. Schema will appear when ready.</p>';
+          return;
+        }
+
+        grid.innerHTML = featureSchema.map(f => `
+          <div class="flex items-center justify-between space-x-2">
+            <label class="text-xs font-medium text-neutral-600 dark:text-neutral-400 truncate w-36">${f.name}</label>
+            <input 
+              type="${f.is_numeric ? 'number' : 'text'}" 
+              step="any" 
+              id="input-feat-${f.name}" 
+              value="${f.sample}" 
+              class="w-full max-w-[200px] bg-neutral-100 dark:bg-neutral-900 border border-apple-lightborder dark:border-apple-darkborder rounded-lg px-2.5 py-1 text-xs text-neutral-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-apple-blue"
+            >
+          </div>
+        `).join('');
+
+        updateCurlSnippet(id);
+      } catch (e) {
+        console.error('Testing interface load error:', e);
+      }
+    }
+
+    function updateCurlSnippet(id) {
+      const payload = {};
+      featureSchema.forEach(f => {
+        payload[f.name] = f.is_numeric ? parseFloat(f.sample) : f.sample;
+      });
+      const snippet = `curl -X POST "http://localhost:8000/api/projects/${id}/predict" \\
+  -H "Content-Type: application/json" \\
+  -d '{"data": [${JSON.stringify(payload)}]}'`;
+      document.getElementById('curl-snippet').textContent = snippet;
+    }
+
+    function copyCurlSnippet() {
+      const text = document.getElementById('curl-snippet').textContent;
+      navigator.clipboard.writeText(text);
+      alert('cURL command copied to clipboard');
+    }
+
+    async function executePrediction() {
+      if (!currentProjectId || !featureSchema.length) return;
+      const record = {};
+      featureSchema.forEach(f => {
+        const input = document.getElementById(`input-feat-${f.name}`);
+        if (input) {
+          record[f.name] = f.is_numeric ? parseFloat(input.value || 0) : input.value;
+        }
+      });
+
+      const resBox = document.getElementById('prediction-result-box');
+      resBox.innerHTML = '<div class="text-apple-blue text-xs font-medium animate-pulse">Running inference...</div>';
+
+      try {
+        const res = await fetch(`/api/projects/${currentProjectId}/predict`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: [record] })
+        });
+        const out = await res.json();
+        if (res.ok && out.predictions && out.predictions.length > 0) {
+          const p = out.predictions[0];
+          const probsHtml = p.probabilities ? `
+            <div class="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+              Confidence: [${p.probabilities.map(pr => `${(pr * 100).toFixed(1)}%`).join(', ')}]
+            </div>
+          ` : '';
+
+          resBox.innerHTML = `
+            <div class="text-[10px] uppercase font-semibold text-neutral-400 tracking-wider mb-0.5">Predicted Value</div>
+            <div class="text-3xl font-extrabold text-emerald-500">${p.prediction}</div>
+            ${probsHtml}
+          `;
+        } else {
+          resBox.innerHTML = `<div class="text-rose-500 text-xs">Error: ${out.detail || 'Prediction failed'}</div>`;
+        }
+      } catch (e) {
+        resBox.innerHTML = `<div class="text-rose-500 text-xs">Error: ${e.message}</div>`;
+      }
+    }
+
+    // ================= MODAL LOGIC (CLICK OUTSIDE DISMISSES) =================
+    function openNewProjectModal() {
+      document.getElementById('new-project-modal').classList.remove('hidden');
+    }
+
+    function closeNewProjectModal() {
+      document.getElementById('new-project-modal').classList.add('hidden');
+      document.getElementById('create-project-form').reset();
+      document.getElementById('file-label').textContent = 'Click to upload or drag & drop CSV file';
+    }
+
+    function handleModalBackdropClick(event) {
+      // If clicking the backdrop outside the card, close modal
+      if (event.target.id === 'new-project-modal') {
+        closeNewProjectModal();
+      }
+    }
+
+    function handlePreviewBackdropClick(event) {
+      if (event.target.id === 'preview-modal') {
+        closePreviewModal();
+      }
+    }
+
+    function handleFileSelected(e) {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById('file-label').textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        if (!document.getElementById('input-proj-name').value) {
+          const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[_-]/g, ' ');
+          document.getElementById('input-proj-name').value = cleanName;
+        }
+      }
+    }
+
+    async function handleCreateProject(e) {
+      e.preventDefault();
+      const name = document.getElementById('input-proj-name').value;
+      const file = document.getElementById('input-file').files[0];
+      const target = document.getElementById('input-target-col').value;
+      const task = document.getElementById('input-task-type').value;
+      const btn = document.getElementById('btn-submit-project');
+
+      if (!file) return alert('Please select a CSV file');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>Creating...</span>';
+
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('file', file);
+      if (target) formData.append('target_column', target);
+      if (task) formData.append('task_type', task);
+
+      try {
+        const res = await fetch('/api/projects', { method: 'POST', body: formData });
+        const p = await res.json();
+        closeNewProjectModal();
+        await fetchProjects();
+        selectProject(p.id);
+      } catch (err) {
+        alert('Failed to create project: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>Launch CrewAI</span><i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>';
+        lucide.createIcons();
+      }
+    }
+
+    async function rerunPipeline() {
+      if (!currentProjectId) return;
+      const btnRerun = document.getElementById('btn-rerun-agents');
+      if (btnRerun) {
+        btnRerun.disabled = true;
+        btnRerun.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+        btnRerun.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>Starting...</span>';
+        lucide.createIcons();
+      }
+      try {
+        const res = await fetch(`/api/projects/${currentProjectId}/run`, { method: 'POST' });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          alert(errData.detail || 'Could not re-run pipeline');
+        }
+        await fetchProjects();
+        loadProject(currentProjectId);
+      } catch (e) {
+        alert('Failed to rerun: ' + e.message);
+        if (btnRerun) {
+          btnRerun.disabled = false;
+          btnRerun.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+          btnRerun.innerHTML = '<i data-lucide="play" class="w-3.5 h-3.5 text-emerald-500"></i><span>Re-run Agents</span>';
+          lucide.createIcons();
+        }
+      }
+    }
+
+    async function deleteCurrentProject() {
+      if (!currentProjectId || !confirm('Delete this project and its artifacts?')) return;
+      try {
+        await fetch(`/api/projects/${currentProjectId}`, { method: 'DELETE' });
+        deselectProject();
+        fetchProjects();
+      } catch (e) {
+        alert('Delete failed: ' + e.message);
+      }
+    }
+
+    // ================= FILE PREVIEW DRAWER =================
+    async function previewFile(filename) {
+      if (!currentProjectId) return;
+      document.getElementById('preview-filename').textContent = filename;
+      const mdBox = document.getElementById('preview-markdown-content');
+      const codeBox = document.getElementById('preview-code-content');
+      const codeInner = document.getElementById('preview-code-inner');
+
+      mdBox.classList.add('hidden');
+      codeBox.classList.add('hidden');
+      document.getElementById('preview-modal').classList.remove('hidden');
+
+      try {
+        const res = await fetch(`/api/projects/${currentProjectId}/files/${filename}`);
+        if (!res.ok) throw new Error('File not available yet');
+        const data = await res.json();
+
+        if (filename.endsWith('.md')) {
+          mdBox.innerHTML = marked.parse(data.content);
+          mdBox.classList.remove('hidden');
+        } else {
+          codeInner.textContent = data.content;
+          hljs.highlightElement(codeInner);
+          codeBox.classList.remove('hidden');
+        }
+      } catch (e) {
+        mdBox.innerHTML = `<p class="text-neutral-400">File is being generated by the agent pipeline...</p>`;
+        mdBox.classList.remove('hidden');
+      }
+    }
+
+    function closePreviewModal() {
+      document.getElementById('preview-modal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
