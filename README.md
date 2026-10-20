@@ -14,6 +14,10 @@
 
 *Zero API keys. Zero cloud costs. 100% private and offline on your local machine.*
 
+<p align="center">
+  <b>English</b> | <a href="README_zh.md">简体中文</a>
+</p>
+
 <br/>
 
 <img src="assets/demo.gif" alt="EpochGo Live Demo" width="920"/>
@@ -221,7 +225,7 @@ uvicorn epoch_go.main:app --host 0.0.0.0 --port 8000 --reload
 - **Mission**: Local-first, private, reproducible multi-agent systems for high-leverage data science & machine learning engineering.  
 - **Connect & Collaborate**:
   - 🌐 Website: [epochlypse.com](https://epochlypse.com/)
-  - ✉️ Email: [founder@epochlypse.com](mailto:founder@epochlypse.com)
+  - ✉️ Email: [aryan@epochlypse.com](mailto:aryan@epochlypse.com)
   - 💼 LinkedIn: [Aryan Dinakaran](https://www.linkedin.com/in/aryan-dinakaran-462277230/)
   - 📸 Instagram: [@aryandinakaran](https://www.instagram.com/aryandinakaran/)
   - 🐙 GitHub: [@AryanDinakaran](https://github.com/AryanDinakaran)
