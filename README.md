@@ -221,7 +221,7 @@ uvicorn epoch_go.main:app --host 0.0.0.0 --port 8000 --reload
 ## 🏛️ Maintained & Developed By
 
 **[Epochlypse Research](https://epochlypse.com/)**  
-- **Lead Architect**: Aryan Dinakaran  
+- **Author & Maintainer**: Aryan Dinakaran  
 - **Mission**: Local-first, private, reproducible multi-agent systems for high-leverage data science & machine learning engineering.  
 - **Connect & Collaborate**:
   - 🌐 Website: [epochlypse.com](https://epochlypse.com/)

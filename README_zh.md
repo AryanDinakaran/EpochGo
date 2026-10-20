@@ -219,7 +219,7 @@ uvicorn epoch_go.main:app --host 0.0.0.0 --port 8000 --reload
 ## 🏛️ 维护与开发团队
 
 **[Epochlypse Research](https://epochlypse.com/)**  
-- **首席架构师**: Aryan Dinakaran  
+- **作者与维护者**: Aryan Dinakaran  
 - **团队愿景**: 构建本地优先、保护隐私且高度可复现的多智能体系统，服务于高杠杆数据科学与机器学习工程。  
 - **联络与交流**:
   - 🌐 官方网站: [epochlypse.com](https://epochlypse.com/)
