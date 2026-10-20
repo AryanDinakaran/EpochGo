@@ -9,6 +9,7 @@
 [![CrewAI](https://img.shields.io/badge/CrewAI-Multi--Agent-FF4B4B)](https://crewai.com)
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black?logo=ollama)](https://ollama.ai)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Production%20API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Release](https://img.shields.io/badge/Release-v1.1.0-brightgreen.svg)](https://github.com/AryanDinakaran/EpochGo/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 *Zero API keys. Zero cloud costs. 100% private and offline on your local machine.*
@@ -44,6 +45,17 @@
    - Synthesizes a production-ready, standalone FastAPI microservice script (`serve.py`) with Pydantic type validation matching your dataset schema.
    - Enables an interactive, in-browser **Prediction Playground** to test predictions and probabilities in real time.
    - Generates ready-to-use `curl` and Python API snippets.
+
+---
+
+## ⚡ What's New in v1.1.0 (Hardened Production Release)
+
+Based directly on community peer reviews and real-world edge case analysis from senior ML engineers:
+
+* 🛡️ **Automated Identifier (ID) Rejection**: Automatically detects non-predictive primary keys, UUIDs, and row indices (`uniqueness_ratio > 0.95`) and drops them prior to pipeline fitting, preventing gradient-boosted trees from memorizing random identifier noise.
+* 🎯 **Fold-Aware Target Encoding (`TargetEncoder`)**: Replaces naive one-hot encoding on high-cardinality features ($20 < N_{unique} \le 500$) with native Scikit-Learn `TargetEncoder(cv=5, smooth='auto')`, strictly preventing validation target leakage.
+* 💾 **Elimination of the 40k-Category OOM Trap**: Instead of allocating massive multi-gigabyte sparse matrices that crash 16GB RAM machines, high-cardinality categoricals are transformed into compact continuous representations, guaranteeing 100% stable execution on consumer hardware.
+* 🔗 **Robust Feature Name Resolution**: Uses native `get_feature_names_out()` across complex `ColumnTransformer` pipelines, ensuring standalone serving scripts (`serve.py`) deserialize cleanly.
 
 ---
 

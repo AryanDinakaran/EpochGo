@@ -59,15 +59,60 @@ class DataProfiler:
             if not np.isnan(skew_val):
                 skewness_summary[col] = round(skew_val, 3)
 
-        # High cardinality in categorical
+        # High cardinality in categorical & Granular Categorical Routing
         categorical_summary = {}
+        low_card_cols = []
+        high_card_cols = []
+        extreme_card_cols = []
+
         for col in categorical_cols:
+            if col == target_col:
+                continue
             n_unique = int(df[col].nunique())
             categorical_summary[col] = {
                 "unique_count": n_unique,
                 "sample_values": df[col].dropna().unique()[:5].tolist(),
-                "high_cardinality": n_unique > 25,
+                "high_cardinality": n_unique > 20,
             }
+            if n_unique <= 20:
+                low_card_cols.append(col)
+            elif n_unique <= 500:
+                high_card_cols.append(col)
+            else:
+                extreme_card_cols.append(col)
+
+        # Automated Identifier (ID / Primary Key / UUID) detection
+        id_columns = []
+        for col in df.columns:
+            if col == target_col:
+                continue
+            n_unique = int(df[col].nunique())
+            uniqueness_ratio = (n_unique / total_rows) if total_rows > 0 else 0
+            col_lower = str(col).lower()
+            is_id_name = any(k in col_lower for k in ["_id", "id", "uuid", "guid", "row_id", "index", "pk"])
+            is_numeric = pd.api.types.is_numeric_dtype(df[col])
+            is_float = pd.api.types.is_float_dtype(df[col])
+            
+            # Non-predictive identifiers:
+            # 1. String/Object columns with uniqueness > 95% (e.g., UUIDs, hash strings, row keys)
+            # 2. Columns explicitly named like an ID with uniqueness > 80% (unless it is a continuous float feature without ID naming)
+            is_identifier = False
+            if not is_numeric and uniqueness_ratio > 0.95 and total_rows > 30:
+                is_identifier = True
+            elif is_id_name and not is_float and uniqueness_ratio > 0.80 and total_rows > 30:
+                is_identifier = True
+
+            if is_identifier:
+                id_columns.append(col)
+                # Remove from categorical / numeric lists if present
+                if col in low_card_cols:
+                    low_card_cols.remove(col)
+                if col in high_card_cols:
+                    high_card_cols.remove(col)
+                if col in extreme_card_cols:
+                    extreme_card_cols.remove(col)
+                if col in numeric_cols:
+                    numeric_cols.remove(col)
 
         # Multicollinearity among numeric features
         high_correlations = []
@@ -113,6 +158,10 @@ class DataProfiler:
             "categorical_summary": categorical_summary,
             "high_correlations": high_correlations,
             "recommend_pca": len(numeric_cols) > 20 or len(high_correlations) > 5,
+            "id_columns": id_columns,
+            "low_card_columns": low_card_cols,
+            "high_card_columns": high_card_cols,
+            "extreme_card_columns": extreme_card_cols,
             "target_info": target_info,
             "head": df.head(3).to_dict(orient="records"),
         }
