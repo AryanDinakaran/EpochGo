@@ -5,6 +5,7 @@
 **Autonomous, Local-First Multi-Agent AutoML Platform**  
 *by [Epochlypse Research](https://epochlypse.com/) &bull; Powered by CrewAI, Ollama, and Scikit-Learn / XGBoost / LightGBM / CatBoost*
 
+[![NVIDIA Inception](https://img.shields.io/badge/NVIDIA%20Inception-Member-76B900?logo=nvidia&logoColor=white)](https://www.nvidia.com/en-us/startups/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![CrewAI](https://img.shields.io/badge/CrewAI-Multi--Agent-FF4B4B)](https://crewai.com)
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black?logo=ollama)](https://ollama.ai)

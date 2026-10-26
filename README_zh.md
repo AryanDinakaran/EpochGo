@@ -5,10 +5,11 @@
 **自主、本地优先的多智能体自动化机器学习 (AutoML) 平台**  
 *由 [Epochlypse Research](https://epochlypse.com/) 开发 &bull; 基于 CrewAI、Ollama 以及 Scikit-Learn / XGBoost / LightGBM / CatBoost*
 
+[![NVIDIA Inception](https://img.shields.io/badge/NVIDIA%20Inception-成员-76B900?logo=nvidia&logoColor=white)](https://www.nvidia.com/en-us/startups/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![CrewAI](https://img.shields.io/badge/CrewAI-Multi--Agent-FF4B4B)](https://crewai.com)
-[![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black?logo=ollama)](https://ollama.ai)
-[![FastAPI](https://img.shields.io/badge/FastAPI-Production%20API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![CrewAI](https://img.shields.io/badge/CrewAI-多智能体-FF4B4B)](https://crewai.com)
+[![Ollama](https://img.shields.io/badge/Ollama-本地大模型-black?logo=ollama)](https://ollama.ai)
+[![FastAPI](https://img.shields.io/badge/FastAPI-生产级接口-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Release](https://img.shields.io/badge/Release-v1.1.0-brightgreen.svg)](https://github.com/AryanDinakaran/EpochGo/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
