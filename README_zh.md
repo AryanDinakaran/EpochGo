@@ -6,6 +6,7 @@
 *由 [Epochlypse Research](https://epochlypse.com/) 开发 &bull; 基于 CrewAI、Ollama 以及 Scikit-Learn / XGBoost / LightGBM / CatBoost*
 
 [![NVIDIA Inception](https://img.shields.io/badge/NVIDIA%20Inception-成员-76B900?logo=nvidia&logoColor=white)](https://www.nvidia.com/en-us/startups/)
+[![Awesome Ollama](https://img.shields.io/badge/Awesome-Ollama-FC60A8?logo=awesomelists&logoColor=white)](https://github.com/EndoTheDev/Awesome-Ollama)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![CrewAI](https://img.shields.io/badge/CrewAI-多智能体-FF4B4B)](https://crewai.com)
 [![Ollama](https://img.shields.io/badge/Ollama-本地大模型-black?logo=ollama)](https://ollama.ai)
@@ -214,6 +215,13 @@ uvicorn epoch_go.main:app --host 0.0.0.0 --port 8000 --reload
 - `GET /api/projects/{id}` - 获取特定项目的完整元数据、当前状态以及模型评测排行榜。
 - `GET /api/projects/{id}/files/{filename}` - 在线查看项目生成的 Markdown 分析报告及 Python 源码文件。
 - `GET /api/projects/{id}/download/{filename}` - 一键打包下载训练完毕的 `.joblib` 模型资产或 `.py` 推理脚本。
+
+---
+
+## 🌐 社区与生态认可
+
+- 🏆 **[NVIDIA Inception 计划](https://www.nvidia.com/en-us/startups/)**: 官方入选成员，致力于加速本地优先、主权边缘 AI 与离线隔离多智能体计算落地。
+- ⚡ **[Awesome-Ollama](https://github.com/EndoTheDev/Awesome-Ollama)**: 正式合入全球 Ollama 官方社区索引列表（收录于 **Automation Tools** 自动化工具专区）。
 
 ---
 

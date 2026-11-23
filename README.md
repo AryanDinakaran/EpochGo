@@ -6,6 +6,7 @@
 *by [Epochlypse Research](https://epochlypse.com/) &bull; Powered by CrewAI, Ollama, and Scikit-Learn / XGBoost / LightGBM / CatBoost*
 
 [![NVIDIA Inception](https://img.shields.io/badge/NVIDIA%20Inception-Member-76B900?logo=nvidia&logoColor=white)](https://www.nvidia.com/en-us/startups/)
+[![Awesome Ollama](https://img.shields.io/badge/Awesome-Ollama-FC60A8?logo=awesomelists&logoColor=white)](https://github.com/EndoTheDev/Awesome-Ollama)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![CrewAI](https://img.shields.io/badge/CrewAI-Multi--Agent-FF4B4B)](https://crewai.com)
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black?logo=ollama)](https://ollama.ai)
@@ -216,6 +217,13 @@ uvicorn epoch_go.main:app --host 0.0.0.0 --port 8000 --reload
 - `GET /api/projects/{id}/download/{filename}` - Download `.joblib` models or `.py` scripts.
 - `POST /api/projects/{id}/predict` - Run real-time predictions against the project's champion model.
 - `WS /ws/projects/{id}` - Real-time WebSocket stream for agent reasoning logs.
+
+---
+
+## 🌐 Community & Recognition
+
+- 🏆 **[NVIDIA Inception Program](https://www.nvidia.com/en-us/startups/)**: Inducted member company accelerating sovereign, local-first edge AI and air-gapped agentic computing.
+- ⚡ **[Awesome-Ollama](https://github.com/EndoTheDev/Awesome-Ollama)**: Merged and featured under **Automation Tools** in the canonical global Ollama ecosystem registry.
 
 ---
 
